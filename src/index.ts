@@ -16,7 +16,7 @@ app.get('/', (_, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log(`a user connected: ${JSON.stringify(socket)}`);
+  console.log(`a user connected: ${socket}`);
 });
 
 server.listen(3000, () => {
