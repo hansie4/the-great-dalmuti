@@ -6,10 +6,25 @@
 - The Greater Peon must give the Greater Dalmuti the lowest two cards in their hand, and in exchange, the Greater Dalmuti gives the Greater Peon any two cards from their hand
 - The Lesser Dalmuti likewise gives any one card in their hand to the Lesser Peon, and receives in exchange the Lesser Peon's lowest card
 - if a player has two Jesters, they may call for an end to taxation (called a "revolution"). If the player with two Jesters is the Greater Peon, then it is a "Greater Revolution", and all players are reseated in reverse order – The Greater Dalmuti becomes the Greater Peon, the Lesser Dalmuti becomes the Lesser Peon, and so on
-- 
 
 ENDPOINTS:
 - Create room
 WS EVENTS:
 - Player joins room
 - Player 
+
+
+[
+    0: The Great Dalmuti
+    1: The Lesser Dalmuti
+    2: Merchant
+    3: Merchant
+    4: Merchant
+    5: Merchant
+    6: Merchant
+    7: Lesser Peon
+    8: Greater Peon
+]
+
+
+Game Start -> Each Player draws starting card -> All starting cards revealed and players put in order -> Cards are delt out to players
