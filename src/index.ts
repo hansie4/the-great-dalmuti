@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "node:http";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
-import { Game, Table } from "./GameTypes";
+import { Game, Player, Table } from "./GameTypes";
 import {
   orderPlayersBasedOnStartingCard,
   dealCards,
@@ -144,9 +144,13 @@ io.on("connection", (socket) => {
 
   socket.on("CHAT_POSTED", (roomId: string, message: string) => {
     console.log(`User with id: ${socket.id} has posted a chat message`);
+
     if (roomId && roomId in gameMap && message) {
+      const sender = gameMap[roomId].table.players.find(
+        (P: Player) => P.socketId === socket.id
+      );
       if (socket.rooms.has(roomId)) {
-        socket.to(roomId).emit("CHAT_MESSAGE", message);
+        socket.nsp.to(roomId).emit("CHAT_MESSAGE", sender.name, message);
       }
     }
   });
@@ -160,10 +164,12 @@ io.on("connection", (socket) => {
         addPlayerToTable(gameMap[roomId].table, name, socket.id);
 
         await socket.join(roomId);
-        socket.emit("ROOM_JOIN_STATUS", true);
-        socket.to(roomId).emit("PLAYER_JOIN_ROOM", name);
+        socket.emit("ROOM_JOIN_STATUS", true, roomId);
+        socket.nsp
+          .to(roomId)
+          .emit("CHAT_MESSAGE", "System", `${name} has joined the table.`);
         if (gameMap[roomId].table.players.length >= 4) {
-          socket.to(roomId).emit("GAME_CAN_BE_STARTED");
+          socket.nsp.to(roomId).emit("GAME_CAN_BE_STARTED");
         }
       } catch (error) {
         socket.emit("ROOM_JOIN_STATUS", false);
