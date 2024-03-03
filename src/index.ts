@@ -13,7 +13,7 @@ import {
   makeMove,
   addPlayerToTable
 } from "./tableUtils";
-import { getDefaultGame } from "./gameUtils";
+import { getDefaultGame, getPublicGameInfo } from "./gameUtils";
 import { dealCardsForStartingOrder } from "./cardUtils";
 import cors from "cors";
 
@@ -181,6 +181,15 @@ io.on("connection", (socket) => {
 
   socket.on("READY_UP_FOR_POSITION_DRAW", () => {
     console.log(`User with id: ${socket.id} is ready for position draw`);
+    const room = Array.from(socket.rooms).find((S: string) => S !== socket.id);
+
+    console.log(socket.rooms);
+
+    gameMap[room].table.players.forEach((P: Player) => {
+      P.ready = true;
+    });
+
+    socket.nsp.to(room).emit("GAME_UPDATE", getPublicGameInfo(gameMap[room]));
   });
 
   socket.on("disconnect", () => {

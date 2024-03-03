@@ -9,3 +9,7 @@ export const joinGameRoom = (roomName: string, playerName: string) => {
 export const sendChatMessage = (roomId: string, message: string) => {
   socket.emit("CHAT_POSTED", roomId, message);
 };
+
+export const readyUp = () => {
+  socket.emit("READY_UP_FOR_POSITION_DRAW");
+};

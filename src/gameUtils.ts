@@ -36,7 +36,19 @@ export const mapPlayersToPublicPlayers = (
     return {
       name: P.name,
       score: P.score,
-      cards: P.cards.length
+      cards: P.cards.length,
+      startingOrderCard: P.startingOrderCard,
+      ready: P.ready
     };
   });
+};
+
+export const getPublicGameInfo = (game: Game) => {
+  return {
+    stage: game.stage,
+    table: {
+      ...game.table,
+      players: mapPlayersToPublicPlayers(game.table.players)
+    }
+  };
 };

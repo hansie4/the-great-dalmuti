@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { joinGameRoom, sendChatMessage, socket } from "./websocket/SocketLogic";
+import { joinGameRoom, socket } from "./websocket/SocketLogic";
 import {
   createTheme,
   MantineProvider,
   MantineColorsTuple,
-  Center
+  Center,
+  Grid,
+  GridCol
 } from "@mantine/core";
 import JoinRoomScreen from "./components/JoinRoomScreen";
 import { ChatMessage } from "./utils/types";
+import ChatBox from "./components/ChatBox";
+import HandDisplay from "./components/HandDisplay";
+import Table from "./components/Table";
+import GameActions from "./components/GameActions";
 
 const myColor: MantineColorsTuple = [
   "#e0fbff",
@@ -33,7 +39,6 @@ const App = () => {
   const [roomJoinError, setRoomJoinError] = useState(false);
   const [playerRoom, setPlayerRoom] = useState<string | null>(null);
   const [chat, setChat] = useState<ChatMessage[]>([]);
-  const [currentMessage, setCurrentMessage] = useState("");
 
   useEffect(() => {
     socket.connect();
@@ -69,16 +74,22 @@ const App = () => {
       ]);
     };
 
+    const onGameUpdate = (gameState: any) => {
+      console.log(gameState);
+    };
+
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("ROOM_JOIN_STATUS", onJoinRoomStatus);
     socket.on("CHAT_MESSAGE", onChatMessage);
+    socket.on("GAME_UPDATE", onGameUpdate);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("ROOM_JOIN_STATUS", onJoinRoomStatus);
       socket.off("CHAT_MESSAGE", onChatMessage);
+      socket.off("GAME_UPDATE", onGameUpdate);
     };
   }, []);
 
@@ -86,31 +97,25 @@ const App = () => {
     <MantineProvider theme={theme}>
       <Center h={"100vh"} w={"100vw"} bg="myColor.1">
         {playerRoom ? (
-          <div>
-            <div>
-              <input
-                type="text"
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-              />
-              <button
-                onClick={() => {
-                  sendChatMessage(playerRoom, currentMessage);
-                  setCurrentMessage("");
-                }}
-              >
-                Send
-              </button>
-            </div>
-            <ul>
-              {chat.map((CM: ChatMessage, index: number) => {
-                return (
-                  <li
-                    key={index}
-                  >{`[${new Date(CM.timestamp).toLocaleTimeString()}] ${CM.sender}: ${CM.message}`}</li>
-                );
-              })}
-            </ul>
+          <div style={{ maxWidth: "1000px" }}>
+            <Grid>
+              <Grid.Col span={12}>
+                <Table />
+              </Grid.Col>
+              <Grid.Col span={3}>
+                <ChatBox
+                  messages={chat}
+                  playerRoom={playerRoom}
+                  showTimestamps={false}
+                />
+              </Grid.Col>
+              <GridCol span={7}>
+                <HandDisplay />
+              </GridCol>
+              <GridCol span={2}>
+                <GameActions />
+              </GridCol>
+            </Grid>
           </div>
         ) : (
           <JoinRoomScreen
