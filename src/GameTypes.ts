@@ -39,4 +39,5 @@ export interface PublicPlayer {
   name: string;
   score: number;
   cards: number;
+  playerIdHash: string;
 }

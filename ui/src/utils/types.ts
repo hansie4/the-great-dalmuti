@@ -32,6 +32,7 @@ export interface Player {
   cards: number;
   startingOrderCard: Card | null;
   ready: boolean;
+  playerIdHash: string;
 }
 
 export interface Card {

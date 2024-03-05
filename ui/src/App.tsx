@@ -10,7 +10,7 @@ import {
   GridCol
 } from "@mantine/core";
 import JoinRoomScreen from "./components/JoinRoomScreen";
-import { ChatMessage } from "./utils/types";
+import { ChatMessage, GameState } from "./utils/types";
 import ChatBox from "./components/ChatBox";
 import HandDisplay from "./components/HandDisplay";
 import Table from "./components/Table";
@@ -39,6 +39,7 @@ const App = () => {
   const [roomJoinError, setRoomJoinError] = useState(false);
   const [playerRoom, setPlayerRoom] = useState<string | null>(null);
   const [chat, setChat] = useState<ChatMessage[]>([]);
+  const [gameState, setGameState] = useState<GameState | null>(null);
 
   useEffect(() => {
     socket.connect();
@@ -74,8 +75,9 @@ const App = () => {
       ]);
     };
 
-    const onGameUpdate = (gameState: any) => {
-      console.log(gameState);
+    const onGameUpdate = (theGameState: any) => {
+      console.log(theGameState);
+      setGameState(theGameState);
     };
 
     socket.on("connect", onConnect);
@@ -100,7 +102,10 @@ const App = () => {
           <div style={{ maxWidth: "1000px" }}>
             <Grid>
               <Grid.Col span={12}>
-                <Table />
+                <Table
+                  socketId={socket.id ? socket.id : ""}
+                  gameStateString={JSON.stringify(gameState)}
+                />
               </Grid.Col>
               <Grid.Col span={3}>
                 <ChatBox

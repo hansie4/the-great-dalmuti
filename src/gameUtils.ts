@@ -1,4 +1,5 @@
 import { Game, Player, PublicPlayer, Stage } from "./GameTypes";
+import bcrypt from "bcrypt";
 
 export const getDefaultGame = (): Game => {
   return {
@@ -38,7 +39,8 @@ export const mapPlayersToPublicPlayers = (
       score: P.score,
       cards: P.cards.length,
       startingOrderCard: P.startingOrderCard,
-      ready: P.ready
+      ready: P.ready,
+      playerIdHash: bcrypt.hashSync(P.socketId, 10)
     };
   });
 };

@@ -168,6 +168,9 @@ io.on("connection", (socket) => {
         socket.nsp
           .to(roomId)
           .emit("CHAT_MESSAGE", "System", `${name} has joined the table.`);
+        socket.nsp
+          .to(roomId)
+          .emit("GAME_UPDATE", getPublicGameInfo(gameMap[roomId]));
         if (gameMap[roomId].table.players.length >= 4) {
           socket.nsp.to(roomId).emit("GAME_CAN_BE_STARTED");
         }
@@ -186,7 +189,9 @@ io.on("connection", (socket) => {
     console.log(socket.rooms);
 
     gameMap[room].table.players.forEach((P: Player) => {
-      P.ready = true;
+      if (P.socketId === socket.id) {
+        P.ready = true;
+      }
     });
 
     socket.nsp.to(room).emit("GAME_UPDATE", getPublicGameInfo(gameMap[room]));
